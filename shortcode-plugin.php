@@ -35,3 +35,33 @@ function sp_handle_employee_shortcode($atts)
 }
 
 
+// Shortcode with using query 
+
+add_shortcode( 'list-all-posts', 'sp_handle_list_all_post_wp_query' );
+
+function sp_handle_list_all_post_wp_query( $attributes ) 
+{
+
+    $attributes = shortcode_atts( array(
+        "number" => 4,
+    ), $attributes, "list-all-posts" );
+
+    $query = new WP_Query( array(
+        "post_per_page" => $attributes["number"],
+        "post_status" => "publish"
+    ));
+
+    if ( $query -> have_posts()) {
+
+        $outputHtml = '<ul>';
+        while ( $query -> have_posts() ) {
+            $query -> the_post();
+            $outputHtml .= '<li><a href="' . get_permalink() . '">' . get_the_title() . '</a></li>';
+        }
+        $outputHtml .= '</ul>';
+        return $outputHtml;
+    }
+
+    return '<p>No posts found.</p>';
+
+}
